@@ -1,22 +1,78 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
 window.Vue = require('vue');
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+// demo data
+var data = {
+    name: 'My Tree',
+    children: [
+        { name: 'hello' },
+        { name: 'wat' },
+        {
+            name: 'child folder',
+            children: [{
+                    name: 'child folder',
+                    children: [
+                        { name: 'hello' },
+                        { name: 'wat' }
+                    ]
+                },
+                { name: 'hello' },
+                { name: 'wat' },
+                {
+                    name: 'child folder',
+                    children: [
+                        { name: 'hello' },
+                        { name: 'wat' }
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+// define the item component
+Vue.component('item', {
+    template: '#item-template',
+    props: {
+        model: Object
+    },
+    data: function() {
+        return {
+            open: false
+        }
+    },
+    computed: {
+        isFolder: function() {
+            return this.model.children &&
+                this.model.children.length
+        }
+    },
+    methods: {
+        toggle: function() {
+            if (this.isFolder) {
+                this.open = !this.open
+            }
+        },
+        changeType: function() {
+            if (!this.isFolder) {
+                Vue.set(this.model, 'children', [])
+                this.addChild()
+                this.open = true
+            }
+        },
+        addChild: function() {
+            this.model.children.push({
+                name: 'new stuff'
+            })
+        }
+    }
+})
 
-const app = new Vue({
-    el: '#app'
-});
+// boot up the demo
+var demo = new Vue({
+    el: '#demo',
+    data: {
+        treeData: data
+    }
+})
